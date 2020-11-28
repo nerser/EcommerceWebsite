@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+	Product
+{% endblock %}
+{% block content %}
+	<div class="container py-5">
+		<div class="row mt-5">
+			<div class="col-10 mx-auto col-md-6 my-3">
+				<img src="{% static 'images/teddy.png' %}" alt="">
+			</div>
+		</div>
+	</div>
+	<div class="col-10 mx-auto col-md-6 my-3">
+		<div>
+			<h1 class="product_title">Teddy Bear</h1>
+			<h5 class="text-info font-italic mb-4">$9.99</h5>
+			<p class="product_desc">Product Description</p>
+			<p class="text-justify product_text">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Id, ex rem vero illo et veritatis ut repellendus commodi unde quos voluptatem, nostrum dolorum tempore aliquam dolorem animi architecto veniam omnis!<br>
+				Earum itaque sequi consequatur deleniti recusandae, exercitationem porro quam quisquam, ipsum est repudiandae possimus! Delectus, quo fugit. Atque tenetur minima consequatur consequuntur molestias sed, enim, repellendus aut odit similique, modi.
+			</p>
+			<p class="text-justify product_text">Out of Stock</p>
+		</div>
+	</div>
+{% endblock %}

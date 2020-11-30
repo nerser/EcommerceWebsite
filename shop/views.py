@@ -6,6 +6,8 @@ from .models import Category, Product, Cart, CartItem
 
 # Create your views here.
 def home(request, category_slug=None):
+	'''Домашняя страница сайта'''
+
 	category_page = None
 	products = None
 
@@ -19,6 +21,8 @@ def home(request, category_slug=None):
 
 
 def product(request, category_slug, product_slug):
+	'''Страница продукта'''
+
 	try:
 		product = Product.objects.get(category__slug=category_slug, slug=product_slug)
 	except Exception as e:
@@ -27,6 +31,8 @@ def product(request, category_slug, product_slug):
 
 
 def _cart_id(request):
+	'''Создание сессии корзины'''
+
 	cart = request.session.session_key
 	if not cart:
 		cart = request.session.create()
@@ -34,6 +40,8 @@ def _cart_id(request):
 
 
 def add_cart(request, product_id):
+	'''Кнопка добавления товара в корзину'''
+
 	product = Product.objects.get(id=product_id)
 	try:
 		cart = Cart.objects.get(cart_id=_cart_id(request))
@@ -43,7 +51,8 @@ def add_cart(request, product_id):
 
 	try:
 		cart_item = CartItem.objects.get(product=product, cart=cart)
-		cart_item.quantity += 1
+		if cart_item.quantity < cart_item.product.stock:
+			cart_item.quantity += 1
 		cart_item.save()
 	except CartItem.DoesNotExist:
 		cart_item = CartItem.objects.create(product=product, quantity=1, cart=cart)
@@ -53,6 +62,8 @@ def add_cart(request, product_id):
 
 
 def cart_detail(request, total=0, counter=0, cart_item=None):
+	'''Описание продукта в корзине'''
+
 	try:
 		cart = Cart.objects.get(cart_id=_cart_id(request))
 		cart_items = CartItem.objects.filter(cart=cart, active=True)
@@ -63,3 +74,29 @@ def cart_detail(request, total=0, counter=0, cart_item=None):
 		pass
 
 	return render(request, 'cart.html', dict(cart_items=cart_items, total=total, counter=counter))
+
+
+def cart_remove(request, product_id):
+	'''Кнопка удаления 1 товара из корзины'''
+
+	cart = Cart.objects.get(cart_id=_cart_id(request))
+	product = get_object_or_404(Product, id=product_id)
+	cart_item = CartItem.objects.get(product=product, cart=cart)
+	if cart_item.quantity > 1:
+		cart_item.quantity -= 1
+		cart_item.save()
+	else:
+		cart_item.delete()
+
+	return redirect('cart_detail')
+
+
+def cart_remove_product(request, product_id):
+	'''Кнопка удаления товара из корзины'''
+
+	cart = Cart.objects.get(cart_id=_cart_id(request))
+	product = get_object_or_404(Product, id=product_id)
+	cart_item = CartItem.objects.get(product=product, cart=cart)
+	cart_item.delete()
+
+	return redirect('cart_detail')
